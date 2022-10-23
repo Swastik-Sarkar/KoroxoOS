@@ -9,7 +9,6 @@ after_memory_detection:
     mov [0x5000], ax
     ret
 upper_memory_detection:
-    ;detect upper memory.
     mov ax, 0xE801
     int 0x15
     xor dx, dx
