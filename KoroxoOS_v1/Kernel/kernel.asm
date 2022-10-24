@@ -1,34 +1,13 @@
-; ==================================================================
-; Copyright (C) 2006 - 2010 MikeOS Developers -- see doc/LICENSE.TXT
-;
-; This is loaded from the floppy/CD, by BOOTLOAD.BIN, as KERNEL.BIN.
-; First we have the system call vectors, which start at a static point
-; for programs to jump to. Following that is the main kernel code and
-; then additional system call code is included.
-; ==================================================================
-
-
 	BITS 16
 
-	%DEFINE TINKEROS_VER '4.1'	; OS version number
-	%DEFINE TINKEROS_API_VER 13	; API version for programs to check
+	%DEFINE KOROXOOS_VER '1'	; OS version number
+	%DEFINE KOROXOOS_API_VER 13	; API version for programs to check
 
 
-	; This is the location in RAM for kernel disk operations, 24K
-	; after the point where the kernel has loaded; it's 8K in size,
-	; because external programs load after it at the 32K point:
+	; This is the location in RAM for kernel disk operations
 
 	disk_buffer	equ	24576
 
-
-; ------------------------------------------------------------------
-; OS CALL VECTORS -- Static locations for system call vectors
-; Note: these cannot be moved, or it'll break the calls!
-
-; The comments show exact locations of instructions in this section,
-; and are used in programs/mikedev.inc so that an external program can
-; use a MikeOS system call without having to know its exact position
-; in the kernel source code...
 
 os_call_vectors:
 	jmp os_main			; 0000h -- Called from bootloader
@@ -128,9 +107,6 @@ os_main:
 	call os_seed_random		; Seed random number generator
 
 
-	; First up, let's see if there's a file called AUTORUN.BIN and execute
-	; it if so, before going to the program launcher menu
-
 	mov ax, autorun_bin_file_name
 	call os_file_exists
 	jc no_autorun_bin		; Skip next three lines if AUTORUN.BIN doesn't exist
@@ -182,10 +158,10 @@ option_screen:
 
 	; Data for the above code...
 
-	os_init_msg		db 'Welcome to the Tinkernut OS', 0
-	os_version_msg		db 'Version ', TINKEROS_VER, 0
+	os_init_msg		db 'Welcome to the K O R O X O  O S', 0
+	os_version_msg		db 'Version ', KOROXOOS_VER, 0
 
-	dialog_string_1		db 'Thanks for trying out Tinkernut OS!', 0
+	dialog_string_1		db 'Thanks for trying out Koroxo OS!', 0
 	dialog_string_2		db 'Please select an interface: OK for the', 0
 	dialog_string_3		db 'program menu, Cancel for command line.', 0
 
@@ -356,16 +332,16 @@ not_bas_extension:
 ; FEATURES -- Code to pull into the kernel
 
 
-	%INCLUDE "features/cli.asm"
-	%INCLUDE "features/basic.asm"
- 	%INCLUDE "features/disk.asm"
-	%INCLUDE "features/keyboard.asm"
-	%INCLUDE "features/math.asm"
-	%INCLUDE "features/misc.asm"
-	%INCLUDE "features/ports.asm"
-	%INCLUDE "features/screen.asm"
-	%INCLUDE "features/sound.asm"
-	%INCLUDE "features/string.asm"
+	%INCLUDE "Drives/Asm/cli.asm"
+	%INCLUDE "Drives/Asm/basic.asm"
+ 	%INCLUDE "Drives/Asm/disk.asm"
+	%INCLUDE "Drives/Asm/keyboard.asm"
+	%INCLUDE "Drives/Asm/math.asm"
+	%INCLUDE "Drives/Asm/misc.asm"
+	%INCLUDE "Drives/Asm/ports.asm"
+	%INCLUDE "Drives/Asm/screen.asm"
+	%INCLUDE "Drives/Asm/sound.asm"
+	%INCLUDE "Drives/Asm/string.asm"
 
 
 ; ==================================================================
