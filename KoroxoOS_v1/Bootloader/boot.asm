@@ -1,26 +1,10 @@
-; ==================================================================
-; Copyright (C) 2006 - 2010 MikeOS Developers -- see doc/LICENSE.TXT
-;
-; Based on a free boot loader by E Dehling. It scans the FAT12
-; floppy for KERNEL.BIN (the MikeOS kernel), loads it and executes it.
-; This must grow no larger than 512 bytes (one sector), with the final
-; two bytes being the boot signature (AA55h). Note that in FAT12,
-; a cluster is the same as a sector: 512 bytes.
-; ==================================================================
-
-
 	BITS 16
 
 	jmp short bootloader_start	; Jump past disk description section
 	nop				; Pad out before disk description
 
 
-; ------------------------------------------------------------------
-; Disk description table, to make it a valid floppy
-; Note: some of these values are hard-coded in the source!
-; Values are those used by IBM for 1.44 MB, 3.5" diskette
-
-OEMLabel		db "TINKERBOOT"	; Disk label
+OEMLabel		db "KOROXOBOOT"	; Disk label
 BytesPerSector		dw 512		; Bytes per sector
 SectorsPerCluster	db 1		; Sectors per cluster
 ReservedForBoot		dw 1		; Reserved sectors for boot record
@@ -37,12 +21,12 @@ LargeSectors		dd 0		; Number of LBA sectors
 DriveNo			dw 0		; Drive No: 0
 Signature		db 41		; Drive signature: 41 for floppy
 VolumeID		dd 00000000h	; Volume ID: any number
-VolumeLabel		db "TINKEROS     "; Volume Label: any 11 chars
+VolumeLabel		db "KOROXO OS  "; Volume Label: any 11 chars
 FileSystem		db "FAT12   "	; File system type: don't change!
 
 
 ; ------------------------------------------------------------------
-; Main bootloader code
+; Boot Loader
 
 bootloader_start:
 	mov ax, 07C0h			; Set up 4K of stack space above buffer
@@ -61,11 +45,6 @@ bootloader_start:
 
 	mov eax, 0			; Needed for some older BIOSes
 
-
-; First, we need to load the root directory from the disk. Technical details:
-; Start of root = ReservedForBoot + NumberOfFats * SectorsPerFat = logical 19
-; Number of root = RootDirEntries * 32 bytes/entry / 512 bytes/sector = 14
-; Start of user data = (start of root) + (number of root) = logical 33
 
 floppy_ok:				; Ready to read first block of data
 	mov ax, 19			; Root dir starts at logical sector 19
@@ -173,12 +152,6 @@ read_fat_ok:
 	push ax				; Save in case we (or int calls) lose it
 
 
-; Now we must load the FAT from the disk. Here's how we find out where it starts:
-; FAT cluster 0 = media descriptor = 0F0h
-; FAT cluster 1 = filler cluster = 0FFh
-; Cluster start = ((cluster number) - 2) * SectorsPerCluster + (start of user)
-;               = (cluster number) + 31
-
 load_file_sector:
 	mov ax, word [cluster]		; Convert sector to logical
 	add ax, 31
@@ -200,11 +173,6 @@ load_file_sector:
 	call reset_floppy		; Otherwise, reset floppy and retry
 	jmp load_file_sector
 
-
-	; In the FAT, cluster values are stored in 12 bits, so we have to
-	; do a bit of maths to work out whether we're dealing with a byte
-	; and 4 bits of the next byte -- or the last 4 bits of one byte
-	; and then the subsequent byte!
 
 calculate_next_cluster:
 	mov ax, [cluster]
@@ -318,7 +286,7 @@ l2hts:			; Calculate head, track and sector settings for int 13h
 ; ------------------------------------------------------------------
 ; STRINGS AND VARIABLES
 
-	kern_filename	db "KERNEL  BIN"	; TinkerOS kernel filename
+	kern_filename	db "KERNEL  BIN"	
 
 	disk_error	db "Floppy error! Press any key...", 0
 	file_not_found	db "KERNEL.BIN not found!", 0
