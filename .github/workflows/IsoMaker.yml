@@ -23,7 +23,9 @@ jobs:
           platform: linux
       - name: Converter
         working-directory: ./KoroxoOS_v1
-        run: compile.sh
+        run: |
+          chmod u+rx compile.sh
+          compile.sh
       - name: Debug
         working-directory: ./KoroxoOS_v1
         run: |
