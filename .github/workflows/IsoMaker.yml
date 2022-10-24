@@ -11,6 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       #---------------------------#
+      - name: Cache
+        uses: actions/cache@v3.0.11
+        with:
+          path: ./KoroxoOS_v1
+          key: zx2he9
       - name: Set up NASM
         uses: ilammy/setup-nasm@v1.4.0
         with:
