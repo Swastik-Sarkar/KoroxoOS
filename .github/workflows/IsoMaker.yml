@@ -17,16 +17,17 @@ jobs:
           version: 2.15.05
           platform: linux
       - name: Converter
-        run: |
-          cd KoroxoOS_v1
-          compile.sh
+        working-directory: ./KoroxoOS_v1
+        run: compile.sh
       - name: Debug
+        working-directory: ./KoroxoOS_v1
         run: |
           nano debug
           n boot.bin
           1 0
           w 0 0 0 1
       - name: Kernel
+        working-directory: ./KoroxoOS_v1
         run: |
           kernel.bin copy
           a:\kernel.bin
