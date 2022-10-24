@@ -18,7 +18,7 @@ jobs:
           platform: linux
       - name: Converter
         run: |
-          cd ../../KoroxoOS_v1
+          cd KoroxoOS_v1
           compile.sh
       - name: Debug
         run: |
